@@ -1,0 +1,6 @@
+amount_and_radius = list(map(int, input().split()))
+villeges = list(map(int,input().split()))
+a = max(villeges)
+b = min(villeges)
+answer = (a-b)//(amount_and_radius[-1]*2)
+print(answer)
