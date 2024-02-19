@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 import matplotlib.pyplot as plt
 
 #filename = 'graphene_all_3351000..log'
