@@ -1,3 +1,4 @@
+
 def read_graph_as_edges():
     n = int(input())
     graph = [list(map(int, input().split())) for i in range(n)]
@@ -47,7 +48,7 @@ def DFS(graph, v, visited=[]):
         if neigh not in visited:
             DFS(graph, neigh, visited)
 
-def has_cycle(graph, v, visited = []):
+"""def has_cycle(graph, v, visited = []):
     result = False
     visited.append(v)
     for neigh in graph[v]:
@@ -59,7 +60,43 @@ def has_cycle(graph, v, visited = []):
         if result == False:
               result = has_cycle(graph, neigh, visited)
 
-    return result
+    return result"""
+from collections import deque
+
+# Выполнить BFS на Graph, начиная с вершины `src` и
+# возвращает true, если цикл найден в Graph
+def isCyclicUtil(v, visited, recStack, graph):
+    # Mark current node as visited and
+    # adds to recursion stack
+    visited[v] = True
+    recStack[v] = True
+
+    # Recur for all neighbours
+    # if any neighbour is visited and in
+    # recStack then graph is cyclic
+    for neighbour in graph[v]:
+        if visited[neighbour] == False:
+            if isCyclicUtil(neighbour, visited, recStack, graph) == True:
+                return True
+        elif recStack[neighbour] == True:
+            return True
+
+    # The node needs to be popped from
+    # recursion stack before function ends
+    recStack[v] = False
+    return False
+
+
+# Returns true if graph is cyclic else false
+def has_cycle( graph):
+    V=len(graph)
+    visited = [False] * (V + 2)
+    recStack = [False] * (V + 2)
+    for node in range(V):
+        if visited[node] == False:
+            if isCyclicUtil(node+1, visited, recStack, graph) == True:
+                return True
+    return False
 def topologicalSortUtil(v, visited, stack = [], i = 1):
     visited[v] = True
     for v in graph:
@@ -70,7 +107,7 @@ def topologicalSortUtil(v, visited, stack = [], i = 1):
 
 
 def topologicalSort(graph):
-    if has_cycle(graph, v=1) == False:
+    if has_cycle(graph) == False:
         visited = [False] * (len(graph)+1)
         stack = []
         for i in range(len(graph)):
@@ -85,20 +122,15 @@ def road_in_v_from_u(graph, v, u):
     if type(Topolog_list) == str:
         return Topolog_list
     else:
-        First_index =Topolog_list.index(v)
-        Second_index = Topolog_list.index(u)
-        answer = 0
-        visited = [v]
-        if First_index < Second_index:
-            return answer
-        else:
-            for i in graph:
-                if i in visited:
-                    answer+=1
-                else:
-                    pass
-                visited.append(i)
-            return answer
+        tops = {v: 0 for v in graph}
+        tops[v]=1
+        for i in Topolog_list[::-1]:
+            for j in graph[i]:
+                tops[j] += tops[i]
+        #{1:1, 2:0, 3:0, 4:0} -> {}
+        #{1: frozenset({2, 3}), 2: frozenset({4}), 3: frozenset({4}), 4: frozenset()}
+        #[4,3,2,1]
+        return tops[u]
 
 def father_n(graph, v , u):
     result = road_in_v_from_u(graph, v , u )
@@ -107,36 +139,71 @@ def father_n(graph, v , u):
     else:
         return False
 
+def bfs(graph, v):
+    visited = []
+    queue = []
+    d = {}
+    for keys in graph.keys():
+        d[keys] = 100000
+    visited.append(v)
+    queue.append(v)
+    d[v] = 0
+
+    while queue:
+        u = queue.pop(0)
+        print(u, end = " ")
+
+        for neighdour in graph[u]:
+            if neighdour not in visited:
+                visited.append(neighdour)
+                queue.append(neighdour)
+                d[neighdour] = d[u] + 1
+    return d
+
+
 
 graph = read_graph_as_neigh_list()
 DFS(graph, 1)
-#print(has_cycle(graph, 1))
+#print(has_cycle(graph))
 #print(topologicalSort(graph))
 #print(graph)
-#print(road_in_v_from_u(graph, 7, 6))
-print(father_n(graph, 6 , 7))
-
+#print(road_in_v_from_u(graph, 1, 7))
+#print(father_n(graph, 6 , 7))
+#d = bfs(graph, 1)
+#print(d)
 '''
 8
-1 4
-1 2
-3 2
-2 5
-2 6
-5 3
-6 2
-6 4
+1 4 
+1 2 
+3 2 
+2 5 
+2 6 
+5 3 
+6 2 
+6 4 
 '''
-
+'''
+10
+1 4 6
+1 2 1
+3 2 2
+2 5 3
+2 6 1
+5 3 1
+6 2 2
+6 4 1
+7 8
+8 7
+'''
 '''
 7
 1 3
 1 5
+1 6
 1 7
 3 4
-6 2
+4 7
 6 7
-6 8
 '''
 
 '''
@@ -156,4 +223,12 @@ print(father_n(graph, 6 , 7))
 67 6
 5 12
 1 5
+'''
+'''
+4
+1 2
+1 3
+3 4
+2 4
+
 '''
