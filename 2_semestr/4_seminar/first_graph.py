@@ -87,7 +87,6 @@ def isCyclicUtil(v, visited, recStack, graph):
     return False
 
 
-# Returns true if graph is cyclic else false
 def has_cycle( graph):
     V=len(graph)
     visited = [False] * (V + 2)

@@ -50,19 +50,36 @@ def DFS_w(graph, v, visited=[]):
             DFS_w(graph, neigh, visited)
 
 
-def has_cycle_w(graph, v, visited=[]):
-    result = False
-    visited.append(v)
-    for neigh in graph[v]:
+def isCyclicUtil(v, visited, recStack, graph):
+    # Mark current node as visited and
+    # adds to recursion stack
+    visited[v] = True
+    recStack[v] = True
 
-        if neigh in visited:
-            result = True
-            return result
+    # Recur for all neighbours
+    # if any neighbour is visited and in
+    # recStack then graph is cyclic
+    for neighbour in graph[v]:
+        if visited[neighbour] == False:
+            if isCyclicUtil(neighbour, visited, recStack, graph) == True:
+                return True
+        elif recStack[neighbour] == True:
+            return True
 
-        if result == False:
-            result = has_cycle_w(graph, neigh, visited)
+    # The node needs to be popped from
+    # recursion stack before function ends
+    recStack[v] = False
+    return False
 
-    return result
+def has_cycle_w( graph):
+    V=len(graph)
+    visited = [False] * (V + 2)
+    recStack = [False] * (V + 2)
+    for node in range(V):
+        if visited[node] == False:
+            if isCyclicUtil(node+1, visited, recStack, graph) == True:
+                return True
+    return False
 
 
 def topologicalSortUtil_w(v, visited, stack=[], i=1):
@@ -92,20 +109,15 @@ def road_in_v_from_u_w(graph, v, u):
     if type(Topolog_list) == str:
         return Topolog_list
     else:
-        First_index = Topolog_list.index(v)
-        Second_index = Topolog_list.index(u)
-        answer = 0
-        visited = [v]
-        if First_index < Second_index:
-            return answer
-        else:
-            for i in graph:
-                if i in visited:
-                    answer += 1
-                else:
-                    pass
-                visited.append(i)
-            return answer
+        tops = {v: 0 for v in graph}
+        tops[v] = 1
+        for i in Topolog_list[::-1]:
+            for j in graph[i]:
+                tops[j] += tops[i]
+        # {1:1, 2:0, 3:0, 4:0} -> {}
+        # {1: frozenset({2, 3}), 2: frozenset({4}), 3: frozenset({4}), 4: frozenset()}
+        # [4,3,2,1]
+        return tops[u]
 
 
 def father_n_w(graph, v, u):
@@ -138,7 +150,29 @@ def bfs_w(graph, v):
     return d
 
 
-def Dijkstra(graph, v):
+def Dijkstra_string_concatenation(graph, v):
+    strok = {}
+    Dijkstra = Dijkstra_sum_min(graph, v)
+    visited = []
+    end = []
+    for key in graph.keys():
+        strok[key] = ''
+    Dijkstra[v] = 0
+    visited.append([0, v])
+    while visited:
+        visited.sort()
+        c = visited.pop(0)
+        end.append(c[1])
+        for neigh in graph[c[1]]:
+            if neigh[0] not in end:
+                if Dijkstra[neigh[0]] >= neigh[1]:
+                    strok[neigh[0]]=strok[c[1]]+str(neigh[1])
+                visited.append(neigh[::-1])
+    return strok
+
+
+
+def Dijkstra_sum_min(graph, v):
     d = {}
     visited = []
     end = []
@@ -160,18 +194,64 @@ def Dijkstra(graph, v):
 
     return d
 
+def Dijkstra_sum_max(graph, v):
+    d = {}
+    visited = []
+    end = []
+    for key in graph.keys():
+        d[key] = 0
+
+    d[v] = 0
+    visited.append([0, v])
+    while visited:
+        visited.sort()
+
+        c = visited.pop(0)
+        end.append(c[1])
+        for neigh in graph[c[1]]:
+            if neigh[0] not in end:
+                if (d[c[1]] + neigh[1]) > d[neigh[0]]:
+                    d[neigh[0]] += (d[c[1]] + neigh[1])
+                visited.append(neigh[::-1])
+
+    return d
+
+def Dijkstra_mult_min(graph, v):
+    d = {}
+    visited = []
+    end = []
+    for key in graph.keys():
+        d[key] = float('infinity')
+
+    d[v] = 1
+    visited.append([0, v])
+    while visited:
+        visited.sort()
+
+        c = visited.pop(0)
+        end.append(c[1])
+        for neigh in graph[c[1]]:
+            if neigh[0] not in end:
+                if (d[c[1]] + neigh[1]) < d[neigh[0]]:
+                    d[neigh[0]] = (d[c[1]] * neigh[1])
+                visited.append(neigh[::-1])
+
+    return d
+
 graph = read_graph_as_neigh_list_w()
 #DFS_w(graph, 1)
 # print(has_cycle(graph, 1))
 # print(topologicalSort(graph))
 #print(graph)
 #print_matrix_w(read_graph_as_neigh_matrix_w())
-# print(road_in_v_from_u(grap
-# h, 7, 6))
+# print(road_in_v_from_u(graph, 7, 6))
 # print(father_n(graph, 6 , 7))
 #d = bfs_w(graph, 1)
 #print(d)
-print(Dijkstra(graph, 1))
+print(Dijkstra_sum_min(graph, 1))
+#print(Dijkstra_sum_max(graph, 1))
+#print(Dijkstra_mult_min(graph, 1))
+print(Dijkstra_string_concatenation(graph, 1))
 '''
 8
 1 4 6
