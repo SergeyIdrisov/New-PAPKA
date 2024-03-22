@@ -238,7 +238,35 @@ def Dijkstra_mult_min(graph, v):
 
     return d
 
-graph = read_graph_as_neigh_list_w()
+def Floyd_Warshall(graph):
+        v = len(graph)
+        d = [[float('infinity') for i in range(v)] for j in range(v)]
+        nxt = [[-1 for i in range(v)] for j in range(v)]
+        for i in range(v):
+            for j in range(v):
+                if graph[i][j] != 0:
+                    d[i][j] = graph[i][j]
+                    nxt[i][j] = j
+        for k in range(1, v):
+            for i in range(v):
+                for j in range(v):
+                    if d[i][k] + d[k][j] < d[i][j]:
+                        d[i][j] = d[i][k] + d[k][j]
+                        nxt[i][j] = nxt[i][k]
+        return d, nxt
+
+def pth(i, j, nxt):
+    p = [i]
+    while nxt[i-1][j-1]+1 != j:
+        i = nxt[i-1][j-1]+1
+        p.append(i)
+    p.append(j)
+    return p
+
+
+
+#graph = read_graph_as_neigh_list_w()
+graph = read_graph_as_neigh_matrix_w()
 #DFS_w(graph, 1)
 # print(has_cycle(graph, 1))
 # print(topologicalSort(graph))
@@ -251,7 +279,10 @@ graph = read_graph_as_neigh_list_w()
 #print(Dijkstra_sum_min(graph, 1))
 #print(Dijkstra_sum_max(graph, 1))
 #print(Dijkstra_mult_min(graph, 1))
-print(Dijkstra_string_concatenation(graph, 1))
+#print(Dijkstra_string_concatenation(graph, 1))
+#D, P = Floyd_Warshall(graph)
+#print(pth(1, 3, P))
+
 '''
 8
 1 4 6
@@ -262,4 +293,23 @@ print(Dijkstra_string_concatenation(graph, 1))
 5 3 1
 6 2 2
 6 4 1
+'''
+
+'''
+5
+1 2 1
+2 4 1
+4 3 1
+2 3 4
+1 3 6
+'''
+
+'''
+6
+1 2 -1 
+2 1 -1 
+1 3 -1
+2 3 -1 
+3 1 -1
+3 2 -1
 '''
