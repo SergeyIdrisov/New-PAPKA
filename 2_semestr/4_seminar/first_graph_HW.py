@@ -48,32 +48,10 @@ def DFS(graph, v, visited=[]):
         if neigh not in visited:
             DFS(graph, neigh, visited)
 
-"""def has_cycle(graph, v, visited = []):
-    result = False
-    visited.append(v)
-    for neigh in graph[v]:
-
-        if neigh in visited:
-            result = True
-            return result
-
-        if result == False:
-              result = has_cycle(graph, neigh, visited)
-
-    return result"""
-from collections import deque
-
-# Выполнить BFS на Graph, начиная с вершины `src` и
-# возвращает true, если цикл найден в Graph
 def isCyclicUtil(v, visited, recStack, graph):
-    # Mark current node as visited and
-    # adds to recursion stack
     visited[v] = True
     recStack[v] = True
 
-    # Recur for all neighbours
-    # if any neighbour is visited and in
-    # recStack then graph is cyclic
     for neighbour in graph[v]:
         if visited[neighbour] == False:
             if isCyclicUtil(neighbour, visited, recStack, graph) == True:
@@ -81,8 +59,6 @@ def isCyclicUtil(v, visited, recStack, graph):
         elif recStack[neighbour] == True:
             return True
 
-    # The node needs to be popped from
-    # recursion stack before function ends
     recStack[v] = False
     return False
 
@@ -126,9 +102,6 @@ def road_in_v_from_u(graph, v, u):
         for i in Topolog_list[::-1]:
             for j in graph[i]:
                 tops[j] += tops[i]
-        #{1:1, 2:0, 3:0, 4:0} -> {}
-        #{1: frozenset({2, 3}), 2: frozenset({4}), 3: frozenset({4}), 4: frozenset()}
-        #[4,3,2,1]
         return tops[u]
 
 def father_n(graph, v , u):
@@ -160,9 +133,9 @@ def bfs(graph, v):
     return d
 
 
-
 graph = read_graph_as_neigh_list()
-DFS(graph, 1)
+#DFS(graph, 1)
+print(has_cycle(graph))
 #print(has_cycle(graph))
 #print(topologicalSort(graph))
 #print(graph)
@@ -170,6 +143,9 @@ DFS(graph, 1)
 #print(father_n(graph, 6 , 7))
 #d = bfs(graph, 1)
 #print(d)
+graph_1 = read_graph_as_neigh_matrix()
+print(graph_1)
+
 '''
 8
 1 4 
@@ -230,4 +206,17 @@ DFS(graph, 1)
 3 4
 2 4
 
+'''
+
+'''
+9
+1 2
+1 3
+2 3
+3 4
+4 2
+4 5
+5 6
+6 1
+6 3
 '''

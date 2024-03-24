@@ -51,19 +51,14 @@ def DFS_w(graph, v, visited=[]):
 
 
 def isCyclicUtil(v, visited, recStack, graph):
-    # Mark current node as visited and
-    # adds to recursion stack
     visited[v] = True
     recStack[v] = True
 
-    # Recur for all neighbours
-    # if any neighbour is visited and in
-    # recStack then graph is cyclic
     for neighbour in graph[v]:
-        if visited[neighbour] == False:
-            if isCyclicUtil(neighbour, visited, recStack, graph) == True:
+        if visited[neighbour[0]] == False:
+            if isCyclicUtil(neighbour[0], visited, recStack, graph) == True:
                 return True
-        elif recStack[neighbour] == True:
+        elif recStack[neighbour[0]] == True:
             return True
 
     # The node needs to be popped from
@@ -71,7 +66,7 @@ def isCyclicUtil(v, visited, recStack, graph):
     recStack[v] = False
     return False
 
-def has_cycle_w( graph):
+def has_cycle_w(graph):
     V=len(graph)
     visited = [False] * (V + 2)
     recStack = [False] * (V + 2)
@@ -82,22 +77,22 @@ def has_cycle_w( graph):
     return False
 
 
-def topologicalSortUtil_w(v, visited, stack=[], i=1):
+def topologicalSortUtil_w(graph, v, visited, stack=[], i=1):
     visited[v] = True
     for v in graph:
         if visited[i] == False:
-            topologicalSortUtil_w(i, visited, stack)
+            topologicalSortUtil_w(graph, i, visited, stack)
             stack.append(v)
         i += 1
 
 
 def topologicalSort_w(graph):
-    if has_cycle_w(graph, v=1) == False:
+    if has_cycle_w(graph) == False:
         visited = [False] * (len(graph) + 1)
         stack = []
         for i in range(len(graph)):
             if visited[i] == False:
-                topologicalSortUtil_w(i, visited, stack)
+                topologicalSortUtil_w(graph, i, visited, stack)
         return stack
     else:
         t = 'Невозможно выполнить из-за присутсвия цикла в данном графе...'
@@ -263,14 +258,25 @@ def pth(i, j, nxt):
     p.append(j)
     return p
 
-
+def bellman_ford(graph, v):
+    N = len(graph)
+    distance = [[float('infinity')]*N for _ in range(N) ]
+    distance[0][v-1] = 0
+    for k in range(1,N):
+        for i in range(N):
+            distance[k][i] = distance[k - 1][i]
+            for j in range(N):
+                if distance[k - 1][j] + graph[j][i] < distance[k][i] and graph[j][i]!=0:
+                    distance[k][i] = distance[k - 1][j] + graph[j][i]
+    return distance[-1]
 
 #graph1 = read_graph_as_neigh_list_w()
-graph2 = read_graph_as_neigh_matrix_w()
+#graph2 = read_graph_as_neigh_matrix_w()
 #DFS_w(graph, 1)
 # print(has_cycle(graph1, 1))
-# print(topologicalSort(graph1))
+#print(topologicalSort_w(graph1))
 #print(graph1)
+#print(graph2)
 #print_matrix_w(read_graph_as_neigh_matrix_w())
 # print(road_in_v_from_u(graph1, 7, 6))
 # print(father_n(graph1, 6 , 7))
@@ -282,7 +288,7 @@ graph2 = read_graph_as_neigh_matrix_w()
 #print(Dijkstra_string_concatenation(graph1, 1))
 #D, P = Floyd_Warshall(graph2)
 #print(pth(1, 3, P))
-
+#print(bellman_ford(graph2, 1))
 '''
 8
 1 4 6
